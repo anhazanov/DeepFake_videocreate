@@ -1,0 +1,14 @@
+  {% for work in workspaces %}
+  <a class="dropdown-item preview-item" href="{% url 'index' work.path_url %}">
+    <div class="preview-thumbnail">
+      <div class="preview-icon bg-dark rounded-circle">
+        <i class="mdi mdi-file-outline text-primary"></i>
+      </div>
+    </div>
+    <div class="preview-item-content">
+      <p class="preview-subject ellipsis mb-1">{{ work.title }}</p>
+    </div>
+  </a>
+  <div class="dropdown-divider"></div>
+  {% endfor %}
+

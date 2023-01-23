@@ -1,0 +1,26 @@
+{% extends 'VideoCreate/base.html' %}
+
+{% block content %}
+<div class="main-panel">
+    <div class="content-wrapper">
+        <div class="row">
+            <div class="card">
+                <div class="card-body">
+                    <h1>Создание нового проекта</h1>
+                    <form action="{% url 'create_workspace' %}" method="post">
+                        {% csrf_token %}
+                        <!-- {{ form.as_p }} -->
+
+                        {% for f in form %}
+                        <p><label for="{{ f.id_for_label }}">{{ f.label }}:   </label>{{ f }}</p>
+                        <div>{{ f.errors }}</div>
+                        {% endfor %}
+
+                        <button type="submit">Добавить</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

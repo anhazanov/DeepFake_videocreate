@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Video Create</h1>
+    <form method="post" enctype="multipart/form-data" action="{% url 'upload_files' %}">
+        {% csrf_token %}
+        <label for="file_dst">Исходное видео (в котором меняется лицо)</label><br>
+        <input type="file" id="file_dst" name="file_dst" title="Исходное видео"><br><br>
+
+        <label for="file_src">Видео донор (из которого берется лицо)</label><br>
+        <input type="file" id="file_src" name="file_src" title="Исходное видео"><br><br>
+
+        <button type="submit">Загрузить видео</button>
+    </form>
+
+</body>
+</html>

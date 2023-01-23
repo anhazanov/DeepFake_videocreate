@@ -1,0 +1,297 @@
+{% extends 'VideoCreate/base.html' %}
+{% load static %}
+{% load VideoCreate_tags %}
+
+{% block project %}
+  {% if path_url != None %}{{ path_url }}
+  {% else %}Выбрать проект
+  {% endif %}
+{% endblock %}
+
+{% block navbar %}
+{% show_nav_bar path_url %}
+{% endblock %}
+
+{% block content %}
+<div class="main-panel">
+    <div class="content-wrapper">
+
+      {% show_info_bar path_url %}
+
+          <div class="row">
+            <div class="col-12 grid-margin stretch-card">
+              <div class="card corona-gradient-card">
+                <div class="card-body py-0 px-0 px-sm-3">
+                  <div class="row align-items-center">
+                    <div class="col-4 col-sm-3 col-xl-2">
+                      <img src="assets/images/dashboard/Group126@2x.png" class="gradient-corona-img img-fluid" alt="">
+                    </div>
+                    {% show_progress_bar %}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        <br>
+        
+        <form method="post" action="{% url 'model_train' path_url %}">
+            {% csrf_token %}
+          
+            <div class="row">
+              <div class="col-md-6 grid-margin stretch-card">
+                <div class="card">
+
+                  <div class="card-body">
+                    <legend>Исходное видео DST (в котором меняем лицо)</legend><br>
+
+                    <p class="card-description">Применение XSeg Generic предтренировки (обязательно, только если ранее выбирали whole_face)</p>
+                    <div class="form-check form-check-flat form-check-primary">
+                      <label class="form-check-label">
+                        <input type="checkbox" class="form-check-input" id="xsegapply_dst" name="xsegapply_dst"> Выполнить выделение кадров из видео? </label>
+                    </div><br>
+                    
+                </div>
+            </div>
+            </div>
+
+            <div class="col-md-6 grid-margin stretch-card">
+              <div class="card">
+              <div class="card-body">
+              <legend>Видео донор SRC (из которого берется лицо)</legend><br>
+              <p class="card-description">Применение XSeg Generic предтренировки (обязательно, только если ранее выбирали whole_face)</p>
+                    <div class="form-check form-check-flat form-check-primary">
+                      <label class="form-check-label">
+                        <input type="checkbox" class="form-check-input" id="xsegapply_src" name="xsegapply_src"> Выполнить выделение кадров из видео? </label>
+                    </div><br>
+
+
+                </div>
+              </div>
+            </div>
+            </div>
+            
+            <div class="row">
+              <div class="col-md-6 grid-margin stretch-card">
+                <div class="card">
+                <div class="card-body">
+                <legend>Тренировка XSeg модели и ее применение</legend><br>
+                <p class="card-description">Дополнительная тренировка XSeg модели для более точного рисование масок если вы выделяли whole_face лица и в видео доноре лицо перекрывается волосами, руками и другими предметами.</p>
+                      <div class="form-check form-check-flat form-check-primary">
+                        <label class="form-check-label">
+                          <input type="checkbox" class="form-check-input" id="xseg_train" name="xseg_train"> Выполнить Тренировку XSeg модели? </label>
+                      </div>
+                      <div class="form-group row">
+                        <label class="col-sm-9 col-form-label"> Количество итераций</label>
+                        <div class="col-sm-3">
+                          <input type="text"  required class="form-control" placeholder="0" id="xseg_train-iter" name="xseg_train-iter" />
+                        </div>
+                      </div>
+                      <br>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6 grid-margin stretch-card">
+                <div class="card">
+                  <div class="card-body">
+                  <legend>Применить тренированную XSeg модель к DST данным</legend><br>
+                        <div class="form-check form-check-flat form-check-primary">
+                          <label class="form-check-label">
+                            <input type="checkbox" class="form-check-input" id="xseg_train_dst" name="xseg_train_dst">Применить тренированную XSeg модель к DST данным? </label>
+                        </div>
+                        <br>
+                    </div>
+                  </div>
+              </div>
+              <div class="col-md-6 grid-margin stretch-card">
+                <div class="card">
+                  <div class="card-body">
+                  <legend>Применить тренированную XSeg модель к SRC данным</legend><br>
+                        <div class="form-check form-check-flat form-check-primary">
+                          <label class="form-check-label">
+                            <input type="checkbox" class="form-check-input" id="xseg_train_src" name="xseg_train_src">Применить тренированную XSeg модель к SRC данным? </label>
+                        </div>
+                        <br>
+                    </div>
+                  </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6 grid-margin stretch-card">
+                <div class="card">
+                <div class="card-body"> 
+                  <button type="submit">Запустить обработку</button>
+                </div>
+                </div>
+              </div>
+            </div>
+
+            </form>
+
+            <div class="row">
+              <div class="col-md-6 grid-margin stretch-card">
+                <div class="card">
+                  <div class="card-body">
+                    <img src="{% static preview %}" alt="">
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <form method="post" action="{% url 'model_train' path_url %}">
+              {% csrf_token %}
+            <div class="row">
+                <div class="col-md-6 grid-margin stretch-card">
+                  <div class="card">
+  
+                    <div class="card-body">
+                      <legend>Итоговая тренировка модели</legend><br>
+                      <!-- <p class="card-description">Выполнить тренировку модели?</p> -->
+                      <div class="form-check form-check-flat form-check-primary">
+                        <label class="form-check-label">
+                          <input type="checkbox" class="form-check-input" id="train_run" name="train_run"> Выполнить тренировку модели? </label>
+                      </div>
+                      <div class="form-check form-check-flat form-check-primary">
+                        <label class="form-check-label">
+                          <input type="checkbox" class="form-check-input" id="train_run-change_set" name="train_run-change_set"> Менять стартовые настройки (выбирать при первом запуске)? </label>
+                      </div>                      
+                      <div class="form-group">
+                        <label>Тип обучения модели (рек. SAEHD)</label>
+                        <select class="js-example-basic-single" style="width:50%" id="train_run-model_name" name="train_run-model_name">
+                          <option value="SAEHD">SAEHD (автокодировщик высокого разрешения)</option>
+                          <option value="Quick96">Quick96 (простой режим для тестирования моделей)</option>
+                          <option value="AMP">AMP (новый тип модели в разработки)</option>                              
+                        </select>
+                      </div>
+                      <div class="form-group row">
+                        <label class="col-sm-9 col-form-label"> Автоматическое резервное копирование модели каждые 0-24 часа</label>
+                        <div class="col-sm-3">
+                          <input type="text"  required class="form-control" placeholder="0" id="train_run-autobackup_hour" name="train_run-autobackup_hour" />
+                        </div>
+                      </div>
+                      <div class="form-group row">
+                        <label class="col-sm-9 col-form-label"> Целевое количество итераций. 0 - без ограничений. Рекомендуется от 200 000.</label>
+                        <div class="col-sm-3">
+                          <input type="text"  required class="form-control" placeholder="0" id="train_run-target_iter" name="train_run-target_iter" />
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label>Тип выделяемого лици. Тот тип, который выбирали на этапе подготовки (рек. whole_face)</label>
+                        <select class="js-example-basic-single" style="width:100%" id="train_run-face_type" name="train_run-face_type">
+                          <option value="wf">whole_face (полное лицо)</option>
+                          <option value="f">full_face (все лицо)</option> 
+                          <option value="head">head (голова)</option>                              
+                        </select>
+                      </div>
+                      <div class="form-group">
+                        <label style="width:75%">Обучение по маске?</label>
+                        <select class="js-example-basic-single" style="width:20%" id="train_run-masked_training" name="train_run-masked_training">
+                          <option value="ДА">ДА</option>
+                          <option value="НЕТ">НЕТ</option>
+                        </select>
+                      </div>
+                      <div class="form-group">
+                        <label style="width:75%"> Размытие краев маски - Blur out mask</label>
+                        <select class="js-example-basic-single" style="width:20%" id="train_run-blur_out_mask" name="train_run-blur_out_mask">
+                          <option value="НЕТ">НЕТ</option>  
+                          <option value="ДА">ДА</option>
+                        </select>
+                      </div>
+                      <br>
+                      <br>
+
+                      <div class="form-group">
+                        <label style="width:75%"> RW (Random warp - случайная деформация) </label>
+                        <select class="js-example-basic-single" style="width:20%" id="train_run-random_warp" name="train_run-random_warp">
+                          <option value="ДА">ДА</option>
+                          <option value="НЕТ">НЕТ</option>  
+                        </select>
+                      </div><br>
+
+                      <div class="form-group">
+                        <label style="width:75%">Flip SRC faces randomly - случайное переворачивание граней SRC</label>
+                        <select class="js-example-basic-single" style="width:20%" id="train_run-random_flip_src" name="train_run-random_flip_src">
+                          <option value="НЕТ">НЕТ</option>
+                          <option value="ДА">ДА</option>
+                        </select>
+                      </div>
+                      <div class="form-group">
+                        <label style="width:75%">Flip DST faces randomly - случайное переворачивание граней DST</label>
+                        <select class="js-example-basic-single" style="width:20%" id="train_run-random_flip_dst" name="train_run-random_flip_dst">
+                          <option value="ДА">ДА</option>
+                          <option value="НЕТ">НЕТ</option>
+                        </select>
+                      </div><br>
+
+                      <div class="form-group">
+                        <label style="width:75%">EMP (Eyes and mouth priority - Приоритет глаз и рта)</label>
+                        <select class="js-example-basic-single" style="width:20%" id="train_run-eyes_mouth_prio" name="train_run-eyes_mouth_prio">
+                          <option value="ДА">ДА</option>
+                          <option value="НЕТ">НЕТ</option>
+                        </select>
+                      </div>
+                      <div class="form-group">
+                        <label style="width:75%">UY (Uniform Yaw - равномерное рыскание)</label>
+                        <select class="js-example-basic-single" style="width:20%" id="train_run-uniform_yaw" name="train_run-uniform_yaw">
+                          <option value="НЕТ">НЕТ</option>  
+                          <option value="ДА">ДА</option>
+                        </select>
+                      </div><br>
+                      <div class="form-group">
+                        <label style="width:75%">LRD (learning rate dropout - отсев скорости обучения)</label>
+                        <select class="js-example-basic-single" style="width:20%" id="train_run-lr_dropout" name="train_run-lr_dropout">
+                          <option value="НЕТ">НЕТ</option>  
+                          <option value="ДА">ДА</option>
+                        </select>
+                      </div><br>
+
+                      <div class="form-group row">
+                        <label class="col-sm-9 col-form-label">GAN power</label>
+                        <div class="col-sm-3">
+                          <input type="text"  required class="form-control" placeholder="0.1" id="train_run-gan_power" name="train_run-gan_power" />
+                        </div>
+                      </div>
+
+
+                      <!-- <div class="form-group row">
+                        <label class="col-sm-9 col-form-label">Batch Size</label>
+                        <div class="col-sm-3">
+                          <input type="text"  required class="form-control" placeholder="4" id="train_run-batch_size" name="train_run-batch_size" />
+                        </div>
+                      </div>
+                      <div class="form-group row">
+                        <label class="col-sm-9 col-form-label">Resolution (в пределах 64-640)</label>
+                        <div class="col-sm-3">
+                          <input type="text" required class="form-control" placeholder="128" id="train_run-resolution" name="train_run-resolution" />
+                        </div>
+                      </div>                    -->
+                      
+                      
+                      
+                      
+
+                      <br>
+  
+                    </div>
+  
+                  </div>
+                </div>                
+              </div>
+              <div class="row">
+                <div class="col-md-6 grid-margin stretch-card">
+                  <div class="card">
+                  <div class="card-body"> 
+                    <button type="submit">Запустить обработку</button>
+                  </div>
+                  </div>
+                </div>
+              </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+    

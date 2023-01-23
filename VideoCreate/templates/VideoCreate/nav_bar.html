@@ -1,0 +1,36 @@
+{% if path_url != None %}
+<li class="nav-item menu-items">
+  <a class="nav-link" href="{% url 'index' path_url=path_url %}">
+    <span class="menu-icon">
+      <i class="mdi mdi-speedometer"></i>
+    </span>
+    <span class="menu-title">Дашбоард</span>
+  </a>
+</li>
+<li class="nav-item menu-items">
+  <a class="nav-link" href="{% url 'video_extract' path_url=path_url %}">
+      <span class="menu-icon">
+        <i class="mdi mdi-speedometer"></i>
+      </span>
+      <span class="menu-title">Обработка видео</span>
+  </a>
+</li>
+<li class="nav-item menu-items">
+  <a class="nav-link" href="{% url 'model_train' path_url=path_url %}">
+    <span class="menu-icon">
+      <i class="mdi mdi-playlist-play"></i>
+    </span>
+    <span class="menu-title">Тренировка модели</span>
+  </a>
+</li>
+<li class="nav-item menu-items">
+  <a class="nav-link" href="{% url 'video_merge' path_url=path_url %}">
+    <span class="menu-icon">
+      <i class="mdi mdi-table-large"></i>
+    </span>
+    <span class="menu-title">Сборка видео</span>
+  </a>
+</li>
+{% else %}
+<p class="mb-0 font-weight-normal d-none d-sm-block">Проект не выбран</p>
+{% endif %}

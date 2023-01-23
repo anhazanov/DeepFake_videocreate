@@ -1,0 +1,8 @@
+{% extends 'VideoCreate/base.html' %}
+{% load VideoCreate_tags %}
+
+{% block project %}
+  {% if path_url != None %}{{ path_url }}
+  {% else %}Выбрать проект
+  {% endif %}
+{% endblock %}

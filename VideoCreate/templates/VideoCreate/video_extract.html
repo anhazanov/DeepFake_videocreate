@@ -1,0 +1,246 @@
+{% extends 'VideoCreate/base.html' %}
+{% load VideoCreate_tags %}
+
+{% block project %}
+  {% if path_url != None %}{{ path_url }}
+  {% else %}Выбрать проект
+  {% endif %}
+{% endblock %}
+
+{% block navbar %}
+
+{% show_nav_bar path_url %}
+
+{% endblock %}
+
+{% block content %}
+<div class="main-panel">
+    <div class="content-wrapper">
+
+      {% show_info_bar path_url %}
+
+          <div class="row">
+            <div class="col-12 grid-margin stretch-card">
+              <div class="card corona-gradient-card">
+                <div class="card-body py-0 px-0 px-sm-3">
+                  <div class="row align-items-center">
+                    <div class="col-4 col-sm-3 col-xl-2">
+                      <img src="assets/images/dashboard/Group126@2x.png" class="gradient-corona-img img-fluid" alt="">
+                    </div>
+                    {% show_progress_bar %}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        <br>
+        
+        <!-- <div class="row">
+          <div class="col-md-4 grid-margin stretch-card">
+            <div class="card">
+              <div class="card-body">
+                <h4 class="card-title">Загрузить видео файлы</h4>
+                <div class="bg-gray-dark d-flex d-md-block d-xl-flex flex-row py-3 px-4 px-md-3 px-xl-4 rounded mt-3">
+                    <form method="post" enctype="multipart/form-data" action="{% url 'video_extract' path_url %}">
+                        {% csrf_token %}
+                        <label for="file_dst">Исходное видео (в котором меняется лицо)</label><br>
+                        <input type="file" id="file_dst" name="file_dst" title="Исходное видео"><br><br>
+                        <label for="file_src">Видео донор (из которого берется лицо)</label><br>
+                        <input type="file" id="file_src" name="file_src" title="Исходное видео"><br><br><br>
+
+                        <button type="submit">Загрузить видео</button>
+                    </form>
+                </div>
+              </div>
+            </div>
+          </div> -->
+
+          <form method="post" action="{% url 'video_extract' path_url %}">
+            {% csrf_token %}
+          
+            <div class="row">
+              <div class="col-md-6 grid-margin stretch-card">
+                <div class="card">
+
+                  <div class="card-body">
+                    <legend>Исходное видео (в котором меняем лицо)</legend><br>
+
+                    <p class="card-description"> Выделение кадров из видео</p>
+                    <div class="form-check form-check-flat form-check-primary">
+                      <label class="form-check-label">
+                        <input type="checkbox" class="form-check-input" id="videoed_extract_video_dst" name="videoed_extract_video_dst"> Выполнить выделение кадров из видео? </label>
+                    </div>                    
+                    <div class="form-group">
+                      <label>Формат выделенных кадров (рек. jpeg)</label>
+                      <select class="js-example-basic-single" style="width:100%" id="videoed_extract_video_dst-output_ext" name="videoed_extract_video_dst-output_ext">
+                        <option value="jpeg">.jpeg (меньше вес файла, качество ниже)</option>
+                        <option value="png">.png (больше вес файла, качество выше)</option>                              
+                      </select>
+                    </div><br>
+                    
+                    <p class="card-description"> Выделение лиц из полученных кадров</p>
+                    <div class="form-check form-check-flat form-check-primary">
+                      <label class="form-check-label">
+                        <input type="checkbox" class="form-check-input" id="face_extract_dst" name="face_extract_dst"> Выполнить выделение лиц из имеющихся кадров? </label>
+                    </div>
+                    <div class="form-group">
+                      <label>Способ выделения (рек. s3fd)</label>
+                      <select class="js-example-basic-single" style="width:100%" id="face_extract_dst-detector" name="face_extract_dst-detector">
+                        <option value="s3fd">s3fd</option>
+                        <option value="manual">manual</option>                              
+                      </select>
+                    </div>
+                    <div class="form-group">
+                      <label>Тип выделяемого лици (рек. whole_face)</label>
+                      <select class="js-example-basic-single" style="width:100%" id="face_extract_dst-face_type" name="face_extract_dst-face_type">
+                        <option value="whole_face">whole_face (полное лицо)</option>
+                        <option value="full_face">full_face (все лицо)</option> 
+                        <option value="head">head (голова)</option>                              
+                      </select>
+                    </div>
+                    <div class="form-group">
+                      <label>Разрешение выделяемых лиц (рек. 512)</label>
+                      <select class="js-example-basic-single" style="width:100%" id="face_extract_dst-image_size" name="face_extract_dst-image_size">
+                        <option value="512">512 (whole_face и видео 720р)</option>
+                        <option value="768">768 (whole_face и видео 720р или 1080р)</option> 
+                        <option value="1024">1024 (whole_face и видео 1080р или 4k)</option>                              
+                      </select>
+                    </div><br>
+                    
+                    <p class="card-description">Сортировка полученных лиц (удаление "плохих" лиц)</p>
+                    <div class="form-check form-check-flat form-check-primary">
+                      <label class="form-check-label">
+                        <input type="checkbox" class="form-check-input" id="sort_images_dst" name="sort_images_dst"> Выполнить сортировку лиц? </label>
+                    </div>
+                    <div class="form-group">
+                      <label>Метод сортировки (рек. hist и/или best faces)</label>
+                      <select class="js-example-basic-single" style="width:100%" id="sort_images_dst-sort_by_method" name="sort_images_dst-sort_by_method">
+                        <option value="hist">hist (сортировка по сходству гистограммы)</option>
+                        <option value="oneface">oneface (лица сортируются в порядке их количества в исходном кадре)</option>
+                        <option value="blur">blur (сортировка по размытости изображения)</option> 
+                        <option value="motion-blur">motion-blur (сортирует изображения, проверяя размытие в движении)</option>                              
+                        <option value="face-yaw">face-yaw (сортировка по рысканию)</option>                              
+                        <option value="brightness">brightness (сортировка по общей яркости изображения/лица)</option>                              
+                        <option value="final">best faces (сортировка по нескольким факторам)</option>                              
+                        <option value="final-fast">best faces faster (аналогично лучшим лицам, но использует прямоугольный размер лица)</option>                              
+                      </select>
+                    </div><br>  
+
+                  </div>
+                  </div>
+                  </div>
+
+
+                  <div class="col-md-6 grid-margin stretch-card">
+                    <div class="card">
+                    <div class="card-body">
+                    <legend>Видео донор (из которого берется лицо)</legend><br>
+
+                    <p class="card-description"> Выделение кадров из видео</p>
+                    <div class="form-check form-check-flat form-check-primary">
+                      <label class="form-check-label">
+                        <input type="checkbox" class="form-check-input" id="videoed_extract_video_src" name="videoed_extract_video_src"> Выполнить выделение кадров из видео? </label>
+                    </div>                    
+                    <div class="form-group">
+                      <label>Формат выделенных кадров (рек. jpeg)</label>
+                      <select class="js-example-basic-single" style="width:100%" id="videoed_extract_video_src-output_ext" name="videoed_extract_video_src-output_ext">
+                        <option value="jpeg">.jpeg (меньше вес файла, качество ниже)</option>
+                        <option value="png">.png (больше вес файла, качество выше)</option>                              
+                      </select>
+                    </div><br>
+                    
+                    <p class="card-description"> Выделение лиц из полученных кадров</p>
+                    <div class="form-check form-check-flat form-check-primary">
+                      <label class="form-check-label">
+                        <input type="checkbox" class="form-check-input" id="face_extract_src" name="face_extract_src"> Выполнить выделение лиц из имеющихся кадров? </label>
+                    </div>
+                    <div class="form-group">
+                      <label>Способ выделения (рек. s3fd)</label>
+                      <select class="js-example-basic-single" style="width:100%" id="face_extract_src-detector" name="face_extract_src-detector">
+                        <option value="s3fd">s3fd</option>
+                        <option value="manual">manual</option>                              
+                      </select>
+                    </div>
+                    <div class="form-group">
+                      <label>Тип выделяемого лици (рек. whole_face)</label>
+                      <select class="js-example-basic-single" style="width:100%" id="face_extract_src-face_type" name="face_extract_src-face_type">
+                        <option value="whole_face">whole_face (полное лицо)</option>
+                        <option value="full_face">full_face (все лицо)</option> 
+                        <option value="head">head (голова)</option>                            
+                      </select>
+                    </div>  
+                    <div class="form-group">
+                      <label>Разрешение выделяемых лиц (рек. 512)</label>
+                      <select class="js-example-basic-single" style="width:100%" id="face_extract_src-image_size" name="face_extract_src-image_size">
+                        <option value="512">512 (whole_face и видео 720р)</option>
+                        <option value="768">768 (whole_face и видео 720р или 1080р)</option> 
+                        <option value="1024">1024 (whole_face и видео 1080р или 4k)</option>                              
+                      </select>
+                    </div><br>
+
+                    <p class="card-description">Сортировка полученных лиц (удаление "плохих" лиц)</p>
+                    <div class="form-check form-check-flat form-check-primary">
+                      <label class="form-check-label">
+                        <input type="checkbox" class="form-check-input" id="sort_images_src" name="sort_images_src"> Выполнить сортировку лиц? </label>
+                    </div>
+                    <div class="form-group">
+                      <label>Метод сортировки (рек. hist и/или best faces)</label>
+                      <select class="js-example-basic-single" style="width:100%" id="sort_images_src-sort_by_method" name="sort_images_src-sort_by_method">
+                        <option value="hist">hist (сортировка по сходству гистограммы)</option>
+                        <option value="oneface">oneface (лица сортируются в порядке их количества в исходном кадре)</option>
+                        <option value="blur">blur (сортировка по размытости изображения)</option> 
+                        <option value="motion-blur">motion-blur (сортирует изображения, проверяя размытие в движении)</option>                              
+                        <option value="face-yaw">face-yaw (сортировка по рысканию)</option>                              
+                        <option value="brightness">brightness (сортировка по общей яркости изображения/лица)</option>                              
+                        <option value="final">best faces (сортировка по нескольким факторам)</option>                              
+                        <option value="final-fast">best faces faster (аналогично лучшим лицам, но использует прямоугольный размер лица)</option>                              
+                      </select>
+                    </div><br> 
+
+                  </div>
+                
+                </div>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-md-6 grid-margin stretch-card">
+                  <div class="card">
+                    <div class="card-body">
+                      <p class="card-description">Переименовать файлы выделенных лиц DST (если удаляли вручную)</p>
+                      <div class="form-check form-check-flat form-check-primary">
+                        <label class="form-check-label">
+                          <input type="checkbox" class="form-check-input" id="rename_dst" name="rename_dst"> Выполнить прееименование файлов? </label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-6 grid-margin stretch-card">
+                  <div class="card">
+                    <div class="card-body">
+                      <p class="card-description">Переименовать файлы выделенных лиц SRC (если удаляли вручную)</p>
+                      <div class="form-check form-check-flat form-check-primary">
+                        <label class="form-check-label">
+                          <input type="checkbox" class="form-check-input" id="rename_src" name="rename_src"> Выполнить прееименование файлов? </label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+            <div class="row">
+              <div class="col-md-6 grid-margin stretch-card">
+                <div class="card">
+                <div class="card-body"> 
+                  <button type="submit">Запустить обработку</button>
+                </div>
+                </div>
+              </div>
+            </div>
+
+          </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
